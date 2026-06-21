@@ -82,12 +82,13 @@ const SurveillanceMapPage = () => {
             {displayedCameras.map(cam => {
               const isHotspot = cam.type === 'hotspot';
               const emoji = isHotspot ? '📍' : '📹';
-              const iconSize = isHotspot ? 20 : Math.max(16, Math.min(28, cam.severity / 3));
+              const severityVal = typeof cam.severity === 'number' ? cam.severity : 50;
+              const iconSize = isHotspot ? 24 : Math.max(16, Math.min(28, severityVal / 3));
 
               return (
                 <Marker 
                   key={cam.id} 
-                  position={[cam.lat, cam.lng]}
+                  position={[cam.lat || 12.9716, cam.lng || 77.5946]}
                   icon={createEmojiIcon(emoji, iconSize)}
                   eventHandlers={{
                     click: () => setSelectedNode(cam),

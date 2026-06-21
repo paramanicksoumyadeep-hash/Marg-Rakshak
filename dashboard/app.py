@@ -6,7 +6,7 @@ from PIL import Image
 
 st.set_page_config(page_title="Eagle's Eye Dashboard", layout="wide")
 
-st.title("🦅 Eagle's Eye: Traffic Violation Command Center")
+st.title(" Eagle's Eye: Traffic Violation Command Center")
 
 # The user runs this from the project root, so the path should just be outputs/evidence
 EVIDENCE_DIR = "outputs/evidence"
@@ -47,7 +47,7 @@ else:
     
     st.markdown("---")
     
-    tab1, tab2, tab3 = st.tabs(["📊 Analytics", "📋 Human Review Queue", "🔍 Search & Export"])
+    tab1, tab2, tab3 = st.tabs([" Analytics", " Human Review Queue", " Search & Export"])
     
     with tab1:
         st.subheader("Violation Trends")
