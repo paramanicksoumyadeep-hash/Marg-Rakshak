@@ -7,7 +7,7 @@ const SurveillanceMapPage = () => {
   const [cameras, setCameras] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNode, setSelectedNode] = useState<any | null>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'cctv' | 'hotspot'>('all');
+  const [activeFilter] = useState<'all' | 'cctv' | 'hotspot'>('all');
 
   // Custom DivIcon for the camera emoji
   const createEmojiIcon = (emoji: string, size: number) => new L.DivIcon({
