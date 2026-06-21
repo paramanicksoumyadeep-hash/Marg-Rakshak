@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Datasets and Heavy Folders (CRITICAL for Render/Vercel)
+datasets/
+video/
+runs/
+"runs (2)/"
+yolov11n.pt
+yolov8n.pt
+
+# Node / Frontend
+node_modules/
+dist/
+.npm/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Render/Vercel specific
+.vercel/
+
+# Artifacts
+Marg_Rakshak_Presentation_Content.docx
+
+# Keep the backend model
+!backend/best.pt
+
+# Massive files
+*.zip
+zipfilesidd/
+yolov10n.pt
+runs (2).zip

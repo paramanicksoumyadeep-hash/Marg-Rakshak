@@ -1,0 +1,13 @@
+# Core Dependencies for Eagle's Eye Pipeline
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.1.0
+opencv-python>=4.8.0.74
+easyocr>=1.7.1
+streamlit>=1.30.0
+pandas>=2.1.0
+pyyaml>=6.0
+pydantic>=2.5.0
+filterpy>=1.4.5 # For tracking kalman filters if using deepsort/bytetrack
+lapx>=0.5.5 # For bytetrack matching
+scipy>=1.11.0

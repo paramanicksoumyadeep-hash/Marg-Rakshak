@@ -1,0 +1,83 @@
+{
+    "universal_classes": {
+        "0": "car",
+        "1": "motorcycle",
+        "2": "bus",
+        "3": "truck",
+        "4": "auto",
+        "5": "bicycle",
+        "6": "pedestrian",
+        "7": "rider",
+        "8": "helmet",
+        "9": "no_helmet",
+        "10": "license_plate",
+        "11": "seatbelt",
+        "12": "no_seatbelt",
+        "13": "green_light",
+        "14": "yellow_light",
+        "15": "red_light",
+        "16": "stop_line",
+        "17": "single_rider",
+        "18": "double_rider",
+        "19": "triple_rider",
+        "20": "right_side_vehicle",
+        "21": "wrong_side_vehicle",
+        "22": "vehicle"
+    },
+    "dataset_mappings": {
+        "helmet-no-helmet.v1i.yolov11": {
+            "0": 9, 
+            "1": 8,
+            "2": 7
+        },
+        "Indian Number Plates.yolov11": {
+            "0": 10
+        },
+        "riders_without_helmet": {
+            "0": 7
+        },
+        "seatbelt_dataset": {
+            "0": 11,
+            "1": 12
+        },
+        "idd_yolo": {
+            "0": 6,
+            "1": 7,
+            "2": 0,
+            "3": 3,
+            "4": 2,
+            "5": 1,
+            "6": 5,
+            "7": 4
+        },
+        "Illegal Parking.v1i.yolov11": {
+            "0": 22,
+            "1": 5,
+            "2": 2,
+            "3": 0,
+            "4": 1,
+            "5": 3,
+            "6": 22
+        },
+        "Red Light Violation Detect dataset.v3i.yolov11": {
+            "0": 1,
+            "1": 2,
+            "2": 0,
+            "3": 13,
+            "4": 1,
+            "5": 15,
+            "6": 16,
+            "7": 3,
+            "8": 14
+        },
+        "Triple Riding Model.v3i.yolov11": {
+            "0": 18,
+            "1": 17,
+            "2": 19
+        },
+        "Wrong Way Driving Detection.v1i.yolov11": {
+            "0": 20,
+            "1": 21
+        }
+    }
+}

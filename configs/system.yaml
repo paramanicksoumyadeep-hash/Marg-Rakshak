@@ -1,0 +1,62 @@
+# Eagle's Eye System Configuration
+
+# Global processing settings
+pipeline:
+  confidence_threshold: 0.75 # Anything below this goes to Human Review Queue
+  target_fps: 15
+  image_output_format: "jpg"
+  blur_faces_plates: true
+
+# Preprocessing thresholds
+preprocessing:
+  blur_variance_threshold: 100.0 # Laplacian variance below this is flagged as low-confidence
+  clahe_clip_limit: 2.0
+  clahe_tile_grid_size: [8, 8]
+
+# Detection configurations
+detection:
+  model_path: "runs (2)/runs/detect/weights/eagle_eye_v1/weights/best.pt" # The actual trained custom weights
+  classes:
+    - car
+    - motorcycle
+    - bus
+    - truck
+    - auto
+    - bicycle
+    - pedestrian
+    - rider
+    - helmet
+    - no_helmet
+    - license_plate
+    - seatbelt
+    - no_seatbelt
+  nms_iou_threshold: 0.45
+
+# Tracking configuration
+tracking:
+  tracker_type: "bytetrack.yaml"
+  track_high_thresh: 0.5
+  track_low_thresh: 0.1
+  new_track_thresh: 0.6
+  track_buffer: 30
+  match_thresh: 0.8
+
+# OCR settings
+ocr:
+  plate_regex: "^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$"
+  confidence_threshold: 0.8
+
+# Camera-specific settings (Mock for Roorkee pilot)
+cameras:
+  cam_001_junction_A:
+    resolution: [1920, 1080]
+    # Allowed direction vector for wrong-side driving (dx, dy)
+    allowed_direction: [0, -1] # Vehicles should move "up" the frame
+    direction_tolerance_degrees: 45
+    # Region of Interest for stop-line (x, y coordinates of polygon)
+    stop_line_polygon: [[400, 800], [1520, 800], [1520, 900], [400, 900]]
+    # Red light crop region for state detection
+    traffic_light_roi: [900, 50, 950, 150]
+    # No-parking zone polygon
+    no_parking_polygon: [[100, 100], [400, 100], [400, 500], [100, 500]]
+    parking_dwell_time_frames: 150 # e.g. 10 seconds at 15fps

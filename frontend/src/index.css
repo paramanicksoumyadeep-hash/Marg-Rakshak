@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "PIPELINE_MODE": "mock",
+  "MONGO_URI": "mongodb://localhost:27017",
+  "DB_NAME": "drishti_challan_db",
+  "CONFIDENCE_THRESHOLDS": {
+    "model": 0.5,
+    "heuristic": 0.6,
+    "ocr": 0.8
+  },
+  "FINES": {
+    "helmet_non_compliance": {
+      "base_fine": 1000,
+      "escalation_threshold_days": 0,
+      "escalation_amount": 0,
+      "flags": ["3-month DL disqualification flag"]
+    },
+    "seatbelt_non_compliance": {
+      "base_fine": 1000,
+      "escalation_threshold_days": 0,
+      "escalation_amount": 0,
+      "flags": []
+    },
+    "triple_riding": {
+      "base_fine": 1000,
+      "escalation_threshold_days": 0,
+      "escalation_amount": 0,
+      "flags": ["3-month DL disqualification flag"]
+    },
+    "wrong_side_driving": {
+      "base_fine": 5000,
+      "escalation_threshold_days": 0,
+      "escalation_amount": 0,
+      "flags": []
+    },
+    "stop_line_violation": {
+      "base_fine": 500,
+      "escalation_threshold_days": 90,
+      "escalation_amount": 1500,
+      "flags": []
+    },
+    "red_light_violation": {
+      "base_fine": 1000,
+      "escalation_threshold_days": 90,
+      "escalation_amount": 2000,
+      "flags": []
+    },
+    "illegal_parking": {
+      "base_fine": 500,
+      "escalation_threshold_days": 365,
+      "escalation_amount": 1500,
+      "flags": ["optional towing-fee flag"]
+    }
+  }
+}
