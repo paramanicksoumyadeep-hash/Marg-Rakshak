@@ -26,7 +26,7 @@ const SurveillanceMapPage = () => {
       
     fetch(url)
       .then(res => res.json())
-      .then(data => setCameras(data.cameras))
+      .then(data => setCameras(data?.cameras || []))
       .catch(err => console.error("Failed to fetch cameras:", err));
   }, [searchQuery]);
 
@@ -76,7 +76,7 @@ const SurveillanceMapPage = () => {
             zoomControl={true}
           >
             <TileLayer
-              url="http://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+              url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
               attribution='&copy; Google Maps'
             />
             {displayedCameras.map(cam => {
