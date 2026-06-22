@@ -105,11 +105,11 @@ const SurveillanceMapPage = () => {
                       <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
                         <div>
                           <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Status</p>
-                          <p className="font-bold text-green-600 dark:text-green-400 text-sm">{cam.status}</p>
+                          <p className="font-bold text-green-600 dark:text-green-400 text-sm">{cam.type === 'active' ? 'Online' : 'Warning'}</p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Violations</p>
-                          <p className="font-bold text-[#C8102E] dark:text-red-500 text-sm">{cam.violations_count.toLocaleString()}</p>
+                          <p className="font-bold text-[#C8102E] dark:text-red-500 text-sm">{(cam.violations || 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -169,7 +169,7 @@ const SurveillanceMapPage = () => {
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                     <p className="text-xs text-gray-500 font-medium mb-1">Total Infractions</p>
-                    <p className="text-xl font-black text-[#C8102E] dark:text-red-500">{selectedNode.violations_count.toLocaleString()}</p>
+                    <p className="text-xl font-black text-[#C8102E] dark:text-red-500">{(selectedNode.violations || 0).toLocaleString()}</p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                     <p className="text-xs text-gray-500 font-medium mb-1">Uptime</p>
