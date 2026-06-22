@@ -275,11 +275,12 @@ except Exception as e:
     model = None
 
 @app.post("/api/predict_images")
-async def predict_images(images: List[UploadFile] = File(...)):
+async def predict_images(request: Request, images: List[UploadFile] = File(...)):
     if not model:
         raise HTTPException(status_code=500, detail="YOLO model not loaded.")
         
     predictions = []
+    base_url = str(request.base_url).rstrip("/")
     
     for img in images:
         file_path = f"static/uploads/{uuid.uuid4()}_{img.filename}"
@@ -309,7 +310,7 @@ async def predict_images(images: List[UploadFile] = File(...)):
             
             if not violations_found:
                 predictions.append({
-                    "image_url": f"http://localhost:8000/{file_path}",
+                    "image_url": f"{base_url}/{file_path}",
                     "image_id": str(uuid.uuid4()),
                     "vehicle_type": primary_vehicle,
                     "vehicle_number": mock_plate,
@@ -327,7 +328,7 @@ async def predict_images(images: List[UploadFile] = File(...)):
                     elif viol == 'red_light': fine_amount = 1000
                     
                     predictions.append({
-                        "image_url": f"http://localhost:8000/{file_path}",
+                        "image_url": f"{base_url}/{file_path}",
                         "image_id": str(uuid.uuid4()),
                         "vehicle_type": primary_vehicle,
                         "vehicle_number": mock_plate,
