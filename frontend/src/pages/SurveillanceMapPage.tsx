@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { MapPin, Camera, AlertTriangle } from 'lucide-react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
 const SurveillanceMapPage = () => {
@@ -94,7 +94,13 @@ const SurveillanceMapPage = () => {
                   eventHandlers={{
                     click: () => setSelectedNode(cam),
                   }}
-                />
+                >
+                  <Popup className="rounded-xl shadow-lg border-0 m-0">
+                    <div className="px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white whitespace-nowrap">
+                      <p className="font-bold text-sm m-0 leading-tight">{cam.name}</p>
+                    </div>
+                  </Popup>
+                </Marker>
               );
             })}
           </MapContainer>
