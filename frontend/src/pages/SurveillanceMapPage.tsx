@@ -94,7 +94,7 @@ const SurveillanceMapPage = () => {
                   eventHandlers={{
                     click: () => setSelectedNode(cam),
                   }}
-                </Marker>
+                />
               );
             })}
           </MapContainer>
