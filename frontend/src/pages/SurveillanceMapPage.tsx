@@ -67,12 +67,6 @@ const SurveillanceMapPage = () => {
               </button>
             </form>
 
-            {/* Filter Toggles */}
-            <div className="flex gap-2 p-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-full shadow-lg border border-gray-200 dark:border-gray-700 pointer-events-auto">
-              <button onClick={() => setActiveFilter('all')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'all' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>All</button>
-              <button onClick={() => setActiveFilter('cctv')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'cctv' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>CCTV Nodes</button>
-              <button onClick={() => setActiveFilter('hotspot')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'hotspot' ? 'bg-[#C8102E] text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>Hotspots</button>
-            </div>
           </div>
 
           <MapContainer 
@@ -101,24 +95,15 @@ const SurveillanceMapPage = () => {
                     click: () => setSelectedNode(cam),
                   }}
                 >
-                  <Popup className="rounded-xl overflow-hidden shadow-xl border-0">
-                    <div className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-w-[200px]">
-                      <h4 className="font-bold text-lg mb-1">{cam.name}</h4>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        <MapPin size={14} />
-                        <span>{cam.type === 'active' ? 'Active CCTV Node' : 'Violation Hotspot'}</span>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-                        <div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Status</p>
-                          <p className="font-bold text-green-600 dark:text-green-400 text-sm">{cam.type === 'active' ? 'Online' : 'Warning'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">Violations</p>
-                          <p className="font-bold text-[#C8102E] dark:text-red-500 text-sm">{(cam.violations || 0).toLocaleString()}</p>
-                        </div>
-                      </div>
+                  <Popup className="rounded-xl shadow-xl border-0">
+                    <div className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-w-[180px]">
+                      <h4 className="font-bold text-sm mb-1">{cam.name}</h4>
+                      <p className={`text-xs font-bold mb-1 ${cam.type === 'active' ? 'text-green-600 dark:text-green-400' : 'text-orange-500'}`}>
+                        Status: {cam.type === 'active' ? 'Active' : 'Warning'}
+                      </p>
+                      <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                        Violations Today: {(cam.violations || 0)}
+                      </p>
                     </div>
                   </Popup>
                 </Marker>
@@ -128,72 +113,74 @@ const SurveillanceMapPage = () => {
         </div>
 
         {/* Right Sidebar - Analytics Panel */}
-        <div className="w-full lg:w-96 flex flex-col gap-6">
+        <div className="w-full lg:w-96 flex flex-col gap-4">
           
-          {/* Top Panel: System Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">Network Status</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
-                    <Camera className="text-green-600 dark:text-green-400" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Active Feeds</p>
-                    <p className="text-xs text-gray-500 font-medium">Online</p>
-                  </div>
-                </div>
-                <span className="text-2xl font-black text-gray-900 dark:text-white">200</span>
-              </div>
-              
-              <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg">
-                    <AlertTriangle className="text-red-600 dark:text-red-400" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Hotspots</p>
-                    <p className="text-xs text-gray-500 font-medium">High Severity</p>
-                  </div>
-                </div>
-                <span className="text-2xl font-black text-gray-900 dark:text-white">200</span>
-              </div>
-            </div>
+          {/* Top Panel: Toggles */}
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setActiveFilter(activeFilter === 'cctv' ? 'all' : 'cctv')}
+              className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-colors ${
+                activeFilter === 'cctv' 
+                  ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400' 
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Camera size={20} className="mb-1" />
+              <span className="text-sm font-bold">Locate CCTV</span>
+            </button>
+            <button 
+              onClick={() => setActiveFilter(activeFilter === 'hotspot' ? 'all' : 'hotspot')}
+              className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-colors ${
+                activeFilter === 'hotspot' 
+                  ? 'bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-900/30 dark:border-orange-800 dark:text-orange-400' 
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+              }`}
+            >
+              <AlertTriangle size={20} className="mb-1" />
+              <span className="text-sm font-bold text-center leading-tight">Unmonitored Hotspots</span>
+            </button>
           </div>
 
           {/* Bottom Panel: Selected Node Details */}
-          <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
-            <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">Node Intelligence</h3>
-            
+          <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col overflow-y-auto">
             {selectedNode ? (
-              <div className="flex-1 flex flex-col">
-                <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700 mb-4">
-                  <h4 className="font-bold text-gray-900 dark:text-white text-lg">{selectedNode.name}</h4>
-                  <p className="text-sm text-gray-500 mt-1 capitalize">{selectedNode.type} Node</p>
+              <div className="flex flex-col h-full">
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-tight">{selectedNode.name}</h2>
+                
+                <div className="mb-8">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                    selectedNode.type === 'active' 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                      : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                  }`}>
+                    {selectedNode.type === 'active' ? 'Active Camera Node' : 'Unmonitored Hotspot'}
+                  </span>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 font-medium mb-1">Total Infractions</p>
-                    <p className="text-xl font-black text-[#C8102E] dark:text-red-500">{(selectedNode.violations || 0).toLocaleString()}</p>
+                <div className="flex flex-col gap-4">
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Severity Index</p>
+                    <p className="text-4xl font-black text-gray-900 dark:text-white">{selectedNode.severity || 'N/A'}</p>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 font-medium mb-1">Uptime</p>
-                    <p className="text-xl font-black text-green-600 dark:text-green-400">99.9%</p>
+                  
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Recorded Violations</p>
+                    <p className="text-4xl font-black text-[#C8102E] dark:text-red-500">{(selectedNode.violations || 0).toLocaleString()}</p>
                   </div>
                 </div>
 
-                <div className="mt-auto">
-                  <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-sm">
-                    View Live Feed
-                  </button>
+                <div className="mt-auto pt-6">
+                  {selectedNode.type === 'active' && (
+                    <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-sm">
+                      View Live Feed
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-4 opacity-60">
                 <MapPin size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
-                <p className="text-gray-500 font-medium">Select any camera node or hotspot on the map to view detailed analytics and live feeds.</p>
+                <p className="text-gray-500 font-medium">Select any camera node or hotspot on the map to view detailed analytics.</p>
               </div>
             )}
           </div>
