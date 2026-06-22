@@ -168,14 +168,6 @@ const SurveillanceMapPage = () => {
                     <p className="text-4xl font-black text-[#C8102E] dark:text-red-500">{(selectedNode.violations || 0).toLocaleString()}</p>
                   </div>
                 </div>
-
-                <div className="mt-auto pt-6">
-                  {selectedNode.type === 'active' && (
-                    <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-sm">
-                      View Live Feed
-                    </button>
-                  )}
-                </div>
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-4 opacity-60">
