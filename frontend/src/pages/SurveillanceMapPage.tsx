@@ -7,7 +7,7 @@ const SurveillanceMapPage = () => {
   const [cameras, setCameras] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNode, setSelectedNode] = useState<any | null>(null);
-  const [activeFilter] = useState<'all' | 'cctv' | 'hotspot'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'cctv' | 'hotspot'>('all');
 
   // Custom DivIcon for the camera emoji
   const createEmojiIcon = (emoji: string, size: number) => new L.DivIcon({
@@ -37,15 +37,15 @@ const SurveillanceMapPage = () => {
   }, [cameras, activeFilter]);
 
   return (
-    <div className="max-w-[1400px] mx-auto h-[calc(100vh-120px)] bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="w-full max-w-[1400px] mx-auto px-4 h-[calc(100vh-120px)] bg-white dark:bg-gray-900 transition-colors duration-300">
       
       <div className="flex flex-col lg:flex-row gap-6 h-full">
         
         {/* Map Container - Left Side */}
         <div className="flex-1 relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 flex flex-col">
           
-          {/* Top Control Bar Overlay */}
-          <div className="absolute top-6 left-0 right-0 z-[1000] flex flex-col items-center gap-3 px-4 pointer-events-none">
+          {/* Bottom Control Bar Overlay */}
+          <div className="absolute bottom-6 left-0 right-0 z-[1000] flex flex-col items-center gap-3 px-4 pointer-events-none">
             
             {/* Search Bar */}
             <form 
@@ -66,6 +66,13 @@ const SurveillanceMapPage = () => {
                 Find
               </button>
             </form>
+
+            {/* Filter Toggles */}
+            <div className="flex gap-2 p-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-full shadow-lg border border-gray-200 dark:border-gray-700 pointer-events-auto">
+              <button onClick={() => setActiveFilter('all')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'all' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>All</button>
+              <button onClick={() => setActiveFilter('cctv')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'cctv' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>CCTV Nodes</button>
+              <button onClick={() => setActiveFilter('hotspot')} className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${activeFilter === 'hotspot' ? 'bg-[#C8102E] text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'}`}>Hotspots</button>
+            </div>
           </div>
 
           <MapContainer 

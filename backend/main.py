@@ -200,11 +200,24 @@ async def get_cameras(q: str = None):
             for i, pm in enumerate(placemarks):
                 coords_tag = pm.find('.//kml:coordinates', ns)
                 name_tag = pm.find('kml:name', ns)
+                name = None
+                if name_tag is not None and name_tag.text:
+                    name = name_tag.text.strip()
+                else:
+                    for data in pm.findall('.//kml:Data', ns):
+                        if data.get('name') == 'name':
+                            val_tag = data.find('kml:value', ns)
+                            if val_tag is not None and val_tag.text:
+                                name = val_tag.text.strip()
+                            break
+                            
+                if not name:
+                    name = f"Surveillance Node {i+1}"
+                    
                 if coords_tag is not None and coords_tag.text:
                     coords = coords_tag.text.strip().split(',')
                     if len(coords) >= 2:
                         lng, lat = float(coords[0]), float(coords[1])
-                        name = name_tag.text if name_tag is not None else f"Surveillance Node {i+1}"
                         
                         severity = round(random.uniform(20.0, 95.0), 1)
                         if severity > 70: color = 'bg-primary'
