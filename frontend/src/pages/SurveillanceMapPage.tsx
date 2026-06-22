@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { MapPin, Camera, AlertTriangle } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
 const SurveillanceMapPage = () => {
@@ -94,18 +94,6 @@ const SurveillanceMapPage = () => {
                   eventHandlers={{
                     click: () => setSelectedNode(cam),
                   }}
-                >
-                  <Popup className="rounded-xl shadow-xl border-0">
-                    <div className="p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-w-[180px]">
-                      <h4 className="font-bold text-sm mb-1">{cam.name}</h4>
-                      <p className={`text-xs font-bold mb-1 ${cam.type === 'active' ? 'text-green-600 dark:text-green-400' : 'text-orange-500'}`}>
-                        Status: {cam.type === 'active' ? 'Active' : 'Warning'}
-                      </p>
-                      <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                        Violations Today: {(cam.violations || 0)}
-                      </p>
-                    </div>
-                  </Popup>
                 </Marker>
               );
             })}
