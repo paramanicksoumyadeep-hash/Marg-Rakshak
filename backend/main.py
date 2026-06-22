@@ -211,8 +211,10 @@ async def get_cameras(q: str = None):
                                 name = val_tag.text.strip()
                             break
                             
-                if not name:
-                    name = f"Surveillance Node {i+1}"
+                if not name or name.lower() in ["cctv", "camera", "surveillance camera"]:
+                    neighborhoods = ["Koramangala", "Indiranagar", "Whitefield", "Jayanagar", "HSR Layout", "Malleswaram", "Marathahalli", "BTM Layout", "Electronic City", "Bellandur", "Rajajinagar", "Hebbal", "Yelahanka", "Banashankari", "Basavanagudi", "JP Nagar", "Ulsoor", "Shivajinagar", "Majestic", "Vidyaranyapura", "Kengeri", "Yeshwanthpur", "Madiwala", "Domlur", "Kammanahalli", "RT Nagar"]
+                    streets = ["Main Road", "Junction", "Cross", "Signal", "Ring Road"]
+                    name = f"{random.choice(neighborhoods)} {random.choice(streets)} Node {i%100 + 1}"
                     
                 if coords_tag is not None and coords_tag.text:
                     coords = coords_tag.text.strip().split(',')
