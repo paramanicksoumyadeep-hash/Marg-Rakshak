@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Shield, Map as MapIcon, Zap, Database, Camera, BrainCircuit, Target, FileText } from 'lucide-react';
+import { Shield, Map as MapIcon, Zap, Database, Camera, BrainCircuit, Target, FileText, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const LandingPage = () => {
@@ -45,7 +45,7 @@ const LandingPage = () => {
 
         {/* Main Title */}
         <motion.div variants={itemVariants}>
-          <h1 className="text-7xl md:text-[110px] font-black text-gray-900 dark:text-white leading-[1] tracking-tighter mb-4 drop-shadow-sm">
+          <h1 className="text-5xl sm:text-7xl md:text-[110px] font-black text-gray-900 dark:text-white leading-[1.1] md:leading-[1] tracking-tighter mb-4 drop-shadow-sm break-words">
             Marg Rakshak
           </h1>
         </motion.div>
@@ -64,19 +64,19 @@ const LandingPage = () => {
         </motion.p>
 
         {/* Action Buttons */}
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-32">
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-5 mb-24 sm:mb-32 w-full max-w-2xl mx-auto">
           <Link 
             to="/generate-challan"
-            className="group relative flex items-center gap-3 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 dark:from-red-600 dark:to-red-800 text-white px-8 py-4 rounded-2xl text-lg font-bold transition-all shadow-xl hover:shadow-2xl hover:shadow-red-600/20 hover:-translate-y-1 overflow-hidden"
+            className="group relative flex items-center justify-center gap-3 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 dark:from-red-600 dark:to-red-800 text-white px-6 sm:px-8 py-4 rounded-2xl text-base sm:text-lg font-bold transition-all shadow-xl hover:shadow-2xl hover:shadow-red-600/20 hover:-translate-y-1 overflow-hidden w-full sm:w-auto"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-            <Zap className="relative z-10" size={22} />
+            <Zap className="relative z-10 shrink-0" size={22} />
             <span className="relative z-10">Initiate Enforcement</span>
           </Link>
 
           <Link 
             to="/map"
-            className="flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-8 py-4 rounded-2xl text-lg font-bold transition-all shadow-md hover:shadow-xl hover:-translate-y-1 backdrop-blur-md"
+            className="flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-6 sm:px-8 py-4 rounded-2xl text-base sm:text-lg font-bold transition-all shadow-md hover:shadow-xl hover:-translate-y-1 backdrop-blur-md w-full sm:w-auto justify-center"
           >
             <MapIcon size={22} className="text-gray-500 dark:text-gray-400" />
             Live Surveillance Grid
@@ -141,6 +141,17 @@ const LandingPage = () => {
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Automated e-Challans</h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               Instantly bridges the gap between detection and enforcement. Detected anomalies are piped into an automated pipeline that drafts compliant e-challans complete with localized evidence.
+            </p>
+          </motion.div>
+
+          {/* New Security Feature Card spanning full width of bottom row */}
+          <motion.div variants={itemVariants} className="lg:col-span-3 bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl p-8 rounded-3xl border border-gray-200/50 dark:border-gray-800/50 shadow-xl group hover:-translate-y-1 transition-transform duration-300">
+            <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center mb-5 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50">
+              <ShieldCheck size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Enterprise-Grade Security</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-4xl">
+              Project Drishti enforces strict security boundaries. The application features <strong>Secure httpOnly Session Cookies</strong> to defeat XSS, comprehensive <strong>OWASP Rate Limiting</strong> to prevent DDoS abuse, <strong>Strict MIME-type File Validation</strong> to sanitize uploads, and <strong>Cryptographic Password Hashing</strong>. We adhere strictly to zero-trust architecture.
             </p>
           </motion.div>
 

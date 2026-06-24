@@ -24,8 +24,11 @@ const SurveillanceMapPage = () => {
       ? `${apiUrl}/api/cameras?q=${encodeURIComponent(searchQuery)}`
       : `${apiUrl}/api/cameras`;
       
-    fetch(url)
-      .then(res => res.json())
+    fetch(url, { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) throw new Error("Not authorized");
+        return res.json();
+      })
       .then(data => setCameras(data?.cameras || []))
       .catch(err => console.error("Failed to fetch cameras:", err));
   }, [searchQuery]);

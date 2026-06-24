@@ -37,6 +37,7 @@ export default function GenerateChallanPage() {
       const res = await fetch(`${apiUrl}/api/predict_images`, {
         method: 'POST',
         body: formData,
+        credentials: 'include'
       });
       
       if (!res.ok) throw new Error("Failed to process images.");
@@ -134,13 +135,13 @@ export default function GenerateChallanPage() {
             </div>
             
             {/* Filters */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full sm:w-auto">
               <div className="flex items-center gap-2">
-                <Filter size={16} className="text-gray-500 dark:text-gray-400" />
+                <Filter size={16} className="text-gray-500 dark:text-gray-400 shrink-0" />
                 <select 
                   value={filterVehicle}
                   onChange={e => setFilterVehicle(e.target.value)}
-                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg py-2 px-3 focus:outline-none focus:border-[#C8102E]"
+                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg py-2 px-3 focus:outline-none focus:border-[#C8102E] w-full sm:w-auto"
                 >
                   {vehicleTypes.map(vt => <option key={vt} value={vt}>{vt}</option>)}
                 </select>
@@ -149,14 +150,14 @@ export default function GenerateChallanPage() {
                 <select 
                   value={filterChallan}
                   onChange={e => setFilterChallan(e.target.value)}
-                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg py-2 px-3 focus:outline-none focus:border-[#C8102E]"
+                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg py-2 px-3 focus:outline-none focus:border-[#C8102E] w-full sm:w-auto"
                 >
                   {challanTypes.map(ct => <option key={ct} value={ct}>{ct}</option>)}
                 </select>
               </div>
               <button 
                 onClick={() => { setResults([]); setFiles([]); }}
-                className="ml-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto mt-2 sm:mt-0"
               >
                 Reset
               </button>

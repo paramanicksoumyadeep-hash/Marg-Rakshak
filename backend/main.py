@@ -1,24 +1,187 @@
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Optional
 import uuid
 import datetime
+import os
+import shutil
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from db import get_db
 from pipeline.mock import MockPipeline
 from rules import calculate_fine
 import json
 
+# SlowAPI setup
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 app = FastAPI(title="Project Drishti Command Center")
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not JWT_SECRET_KEY:
+    raise RuntimeError("JWT_SECRET_KEY environment variable is required. Please set it in your .env file.")
+
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 pipeline = MockPipeline()
+
+# Auth setup
+from pydantic import BaseModel, Field
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+
+SECRET_KEY = JWT_SECRET_KEY
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class UserCreate(BaseModel):
+    first_name: str
+    last_name: str
+    username: str
+    email: str
+    password: str = Field(..., min_length=8)
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+        
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+@app.post("/api/auth/register")
+@limiter.limit("3/minute")
+async def register(request: Request, user: UserCreate, response: Response):
+    db = await get_db()
+    
+    # Check if username or email exists
+    existing_user = await db.users.find_one({"$or": [{"username": user.username}, {"email": user.email}]})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username or Email already registered")
+        
+    user_dict = user.model_dump()
+    user_dict["hashed_password"] = get_password_hash(user_dict.pop("password"))
+    user_dict["created_at"] = datetime.datetime.utcnow()
+    
+    await db.users.insert_one(user_dict)
+    
+    # Generate token
+    access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "name": f"{user.first_name} {user.last_name}"}, expires_delta=access_token_expires
+    )
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    return {"message": "Successfully registered"}
+
+@app.post("/api/auth/login")
+@limiter.limit("5/15minute")
+async def login(request: Request, user_credentials: UserLogin, response: Response):
+    db = await get_db()
+    user = await db.users.find_one({"username": user_credentials.username})
+    
+    if not user or not verify_password(user_credentials.password, user["hashed_password"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+    access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["username"], "name": f"{user['first_name']} {user['last_name']}"}, expires_delta=access_token_expires
+    )
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    return {"message": "Successfully logged in"}
+
+@app.post("/api/auth/demo")
+@limiter.limit("5/minute")
+async def login_demo(request: Request, response: Response):
+    access_token_expires = datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": "demo_surveyor", "name": "Demo Surveyor"}, expires_delta=access_token_expires
+    )
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
+    return {"message": "Successfully logged in as demo surveyor"}
+
+@app.get("/api/auth/me")
+async def get_me(user = Depends(get_current_user)):
+    return {"username": user.get("sub"), "name": user.get("name")}
+
+@app.post("/api/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token", httponly=True, secure=True, samesite="lax")
+    return {"message": "Logged out"}
+
 
 async def process_batch(batch_id: str, file_names: List[str]):
     db = await get_db()
@@ -73,11 +236,26 @@ async def process_batch(batch_id: str, file_names: List[str]):
     await db.batches.update_one({"batch_id": batch_id}, {"$set": {"status": "done"}})
 
 
+ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
+MAX_FILE_SIZE = 10 * 1024 * 1024 # 10 MB
+
 @app.post("/api/upload")
-async def upload_files(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...)):
+async def upload_files(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...), user = Depends(get_current_user)):
     db = await get_db()
     batch_id = f"batch_{str(uuid.uuid4())[:8]}"
-    file_names = [f.filename for f in files]
+    
+    file_names = []
+    for img in files:
+        content = await img.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail=f"File {img.filename} is too large")
+        if img.content_type not in ALLOWED_MIME:
+            raise HTTPException(status_code=415, detail=f"File type {img.content_type} not allowed")
+            
+        safe_name = f"{uuid.uuid4()}.jpg"
+        file_path = Path("static/uploads") / safe_name
+        file_path.write_bytes(content)
+        file_names.append(safe_name)
     
     await db.batches.insert_one({
         "batch_id": batch_id,
@@ -91,7 +269,7 @@ async def upload_files(background_tasks: BackgroundTasks, files: List[UploadFile
     return {"batch_id": batch_id, "message": "Batch queued for processing."}
 
 @app.get("/api/batches/{id}/status")
-async def get_batch_status(id: str):
+async def get_batch_status(id: str, user = Depends(get_current_user)):
     db = await get_db()
     batch = await db.batches.find_one({"batch_id": id}, {"_id": 0})
     if not batch:
@@ -99,7 +277,7 @@ async def get_batch_status(id: str):
     return batch
 
 @app.get("/api/batches/{id}/results")
-async def get_batch_results(id: str):
+async def get_batch_results(id: str, user = Depends(get_current_user)):
     db = await get_db()
     cursor = db.challans.find({"batch_id": id}, {"_id": 0})
     challans = await cursor.to_list(length=1000)
@@ -115,7 +293,7 @@ async def get_batch_results(id: str):
     return grouped
 
 @app.get("/api/challans")
-async def list_challans(type: str = None, status: str = None):
+async def list_challans(type: str = None, status: str = None, user = Depends(get_current_user)):
     db = await get_db()
     query = {}
     if type: query["violation_type"] = type
@@ -125,7 +303,7 @@ async def list_challans(type: str = None, status: str = None):
     return {"challans": challans}
 
 @app.get("/api/challans/{id}")
-async def get_challan(id: str):
+async def get_challan(id: str, user = Depends(get_current_user)):
     db = await get_db()
     challan = await db.challans.find_one({"challan_id": id}, {"_id": 0})
     if not challan:
@@ -133,7 +311,7 @@ async def get_challan(id: str):
     return challan
 
 @app.get("/api/plates/{number}")
-async def get_plate_dossier(number: str):
+async def get_plate_dossier(number: str, user = Depends(get_current_user)):
     db = await get_db()
     vehicle = await db.vehicles.find_one({"plate_number": number}, {"_id": 0})
     if not vehicle:
@@ -149,7 +327,7 @@ async def get_plate_dossier(number: str):
     return vehicle
 
 @app.post("/api/challans/{id}/send")
-async def send_challan(id: str):
+async def send_challan(id: str, user = Depends(get_current_user)):
     db = await get_db()
     res = await db.challans.update_one({"challan_id": id}, {"$set": {"status": "sent"}})
     if res.modified_count == 0:
@@ -164,7 +342,7 @@ async def send_challan(id: str):
     }
 
 @app.get("/api/analytics/summary")
-async def get_analytics():
+async def get_analytics(user = Depends(get_current_user)):
     db = await get_db()
     pipeline = [{"$group": {"_id": "$violation_type", "count": {"$sum": 1}}}]
     cursor = db.challans.aggregate(pipeline)
@@ -184,12 +362,18 @@ import xml.etree.ElementTree as ET
 _camera_cache = None
 
 @app.get("/api/cameras")
-async def get_cameras(q: str = None):
+async def get_cameras(q: str = None, user = Depends(get_current_user)):
     global _camera_cache
     
     cameras = _camera_cache
-    if cameras is None or len(cameras) == 0 or "type" not in cameras[0]:
-        cameras = []
+    if not cameras:
+        import json
+        try:
+            with open("real_cameras.json", "r") as f:
+                cameras = json.load(f)
+        except Exception:
+            cameras = config.get("cameras", [])
+        _camera_cache = cameras
         kml_file = os.path.join(os.path.dirname(__file__), "..", "datasets", "cctv", "244d7d27-6a5b-441c-b787-23cf02a697ec.kml")
         try:
             tree = ET.parse(kml_file)
@@ -290,7 +474,8 @@ except Exception as e:
     model = None
 
 @app.post("/api/predict_images")
-async def predict_images(request: Request, images: List[UploadFile] = File(...)):
+@limiter.limit("10/minute")
+async def predict_images(request: Request, images: List[UploadFile] = File(...), user = Depends(get_current_user)):
     if not model:
         raise HTTPException(status_code=500, detail="YOLO model not loaded.")
         
@@ -298,11 +483,17 @@ async def predict_images(request: Request, images: List[UploadFile] = File(...))
     base_url = str(request.base_url).rstrip("/")
     
     for img in images:
-        file_path = f"static/uploads/{uuid.uuid4()}_{img.filename}"
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(img.file, buffer)
+        content = await img.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail=f"File {img.filename} is too large")
+        if img.content_type not in ALLOWED_MIME:
+            raise HTTPException(status_code=415, detail=f"File type {img.content_type} not allowed")
             
-        results = model(file_path, conf=0.25)
+        safe_name = f"{uuid.uuid4()}.jpg"
+        file_path = Path("static/uploads") / safe_name
+        file_path.write_bytes(content)
+            
+        results = model(str(file_path), conf=0.25)
         
         # Process results
         for r in results:

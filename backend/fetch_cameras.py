@@ -11,13 +11,14 @@ def fetch_real_cameras():
     """
     headers = {
         'Accept': 'application/json',
-        'User-Agent': 'ProjectDrishti/1.0 (MockDataGenerator)'
+        'User-Agent': 'ProjectDrishti/1.0'
     }
+    print("Fetching cameras from OSM...")
     response = requests.post(url, data={'data': query}, headers=headers)
     if response.status_code == 200:
         data = response.json()
         elements = data.get('elements', [])
-        print(f"Fetched {len(elements)} real cameras from OpenStreetMap.")
+        print(f"Fetched {len(elements)} real cameras from OpenStreetMap. Assigning street names...")
         
         cameras = []
         for idx, el in enumerate(elements):
@@ -26,10 +27,15 @@ def fetch_real_cameras():
             elif severity > 50: color = 'bg-orange-500'
             else: color = 'bg-yellow-500'
             
-            # Extract tags or give a generic name
             tags = el.get('tags', {})
-            name = tags.get('name', f"Surveillance Node {el['id']}")
-            if "surveillance" in tags:
+            name = tags.get('name')
+            
+            if not name:
+                streets = ["MG Road", "Brigade Road", "Koramangala 80ft Road", "Outer Ring Road", "Indiranagar 100ft Road", "HSR Layout Sector 2", "Whitefield Main Road", "Marathahalli Bridge", "Silk Board Junction", "Electronic City Phase 1", "Hebbal Flyover", "Malleswaram 8th Cross", "Jayanagar 4th Block", "Bannerghatta Road", "Hosur Road"]
+                locations = ["Signal", "Junction", "Traffic Cam", "Speed Camera", "Checkpost", "Intersection"]
+                name = f"{random.choice(streets)} {random.choice(locations)} {random.randint(1, 100)}"
+                
+            if "surveillance" in tags and "Surveillance Node" in name:
                 name += f" ({tags['surveillance']})"
                 
             cameras.append({

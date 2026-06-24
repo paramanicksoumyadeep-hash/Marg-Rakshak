@@ -54,6 +54,10 @@ Marg_Rakshak_Presentation_Content.docx
 # Keep the backend model
 !backend/best.pt
 
+# Ignore uploaded images
+backend/static/uploads/*
+!backend/static/uploads/.gitkeep
+
 # Massive files
 *.zip
 zipfilesidd/
