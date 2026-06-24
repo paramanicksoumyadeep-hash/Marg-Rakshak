@@ -13,7 +13,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [name, setName] = useState<string | null>(localStorage.getItem('name'));
-  const [isSurveyor, setIsSurveyor] = useState<boolean>(localStorage.getItem('isSurveyor') === 'true');
+  const [isSurveyor, setIsSurveyor] = useState<boolean>(false);
 
   const checkSession = async () => {
     try {
@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setName(newName);
     setIsSurveyor(false);
     localStorage.setItem('name', newName);
-    localStorage.removeItem('isSurveyor');
   };
 
   const logout = async () => {
@@ -54,13 +53,11 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setName(null);
     setIsSurveyor(false);
     localStorage.removeItem('name');
-    localStorage.removeItem('isSurveyor');
   };
 
   const setSurveyorMode = async (active: boolean) => {
     setIsSurveyor(active);
     if (active) {
-      localStorage.setItem('isSurveyor', 'true');
       setName('Demo Surveyor');
       try {
         const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
