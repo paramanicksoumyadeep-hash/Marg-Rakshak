@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Eye, Loader2 } from 'lucide-react';
 
-const API_BASE = 'http://localhost:8000/api/auth';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth`;
 
 export default function AuthPage() {
   const { checkSession, setSurveyorMode } = useAuth();
