@@ -126,7 +126,7 @@ async def register(request: Request, user: UserCreate, response: Response):
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return {"message": "Successfully registered"}
@@ -150,7 +150,7 @@ async def login(request: Request, user_credentials: UserLogin, response: Respons
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return {"message": "Successfully logged in"}
@@ -168,7 +168,7 @@ async def login_demo(request: Request, response: Response):
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return {"message": "Successfully logged in as demo surveyor"}
