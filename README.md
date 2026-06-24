@@ -94,7 +94,7 @@ python seed.py
 
 | Service | URL |
 |---|---|
-| 🖥️ Frontend App | [https://marg-rakshak-ai.vercel.app/](https://marg-rakshak-ai.vercel.app/) |
+| 🖥️ App | [https://marg-rakshak-ai.vercel.app/](https://marg-rakshak-ai.vercel.app/) |
 
 ---
 
