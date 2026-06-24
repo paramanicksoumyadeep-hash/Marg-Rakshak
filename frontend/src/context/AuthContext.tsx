@@ -17,7 +17,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   const checkSession = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
       const res = await fetch(`${apiUrl}/api/auth/me`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   const logout = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
       await fetch(`${apiUrl}/api/auth/logout`, { method: 'POST', credentials: 'include' });
     } catch (e) {}
     
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
       localStorage.setItem('isSurveyor', 'true');
       setName('Demo Surveyor');
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
         await fetch(`${apiUrl}/api/auth/demo`, { method: 'POST', credentials: 'include' });
       } catch (e) {}
     } else {
