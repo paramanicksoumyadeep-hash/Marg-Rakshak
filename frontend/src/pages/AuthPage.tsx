@@ -38,7 +38,17 @@ export default function AuthPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || data.error || 'Authentication failed');
+        let errorMsg = 'Authentication failed';
+        if (data.detail) {
+          if (typeof data.detail === 'string') {
+            errorMsg = data.detail;
+          } else if (Array.isArray(data.detail)) {
+            errorMsg = data.detail[0].msg || 'Validation Error';
+          }
+        } else if (data.error) {
+          errorMsg = data.error;
+        }
+        throw new Error(errorMsg);
       }
 
       await checkSession();
