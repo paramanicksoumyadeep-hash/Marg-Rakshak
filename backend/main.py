@@ -178,7 +178,7 @@ async def get_me(user = Depends(get_current_user)):
 
 @app.post("/api/auth/logout")
 async def logout(response: Response):
-    response.delete_cookie("access_token", httponly=True, secure=True, samesite="lax")
+    response.delete_cookie("access_token", httponly=True, secure=True, samesite="none")
     return {"message": "Logged out"}
 
 
