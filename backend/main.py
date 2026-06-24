@@ -100,7 +100,7 @@ async def get_current_user(request: Request):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 @app.post("/api/auth/register")
-@limiter.limit("3/minute")
+@limiter.limit("20/minute")
 async def register(request: Request, user: UserCreate, response: Response):
     db = await get_db()
     
@@ -132,7 +132,7 @@ async def register(request: Request, user: UserCreate, response: Response):
     return {"message": "Successfully registered"}
 
 @app.post("/api/auth/login")
-@limiter.limit("5/15minute")
+@limiter.limit("20/minute")
 async def login(request: Request, user_credentials: UserLogin, response: Response):
     db = await get_db()
     user = await db.users.find_one({"username": user_credentials.username})

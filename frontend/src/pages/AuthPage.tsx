@@ -37,7 +37,7 @@ export default function AuthPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.detail || 'Authentication failed');
+        throw new Error(data.detail || data.error || 'Authentication failed');
       }
 
       await checkSession();
